@@ -1,0 +1,70 @@
+# Node.js
+node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# React Native
+*.gradle
+*.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swm
+android/.gradle/
+android/app/build/
+android/build/
+ios/Pods/
+ios/build/
+ios/DerivedData/
+*.xcworkspace
+*.xcodeproj/project.xcworkspace/
+
+# macOS
+.DS_Store
+
+# Watchman
+.watchmanconfig
+
+# Expo
+.expo/
+.expo-shared/
+
+# React Native Packager
+react-native/packager.sh
+.flowconfig
+.flow/
+.vscode/
+
+# Metro
+.metronome/
+
+# Webstorm
+.idea/
+
+# Buck
+buck-out/
+\.buckd/
+.buckconfig.local
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+
+# misc
+*.iml
+.env
+.env.*
+
+# Jest
+/coverage/
+
+# Project-specific
+# Uncomment if you have them in your project
+# .env
+# .vscode/
+# .firebase/

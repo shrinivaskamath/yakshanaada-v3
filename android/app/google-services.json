@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "720971405897",
+    "project_id": "yakshanaadav3",
+    "storage_bucket": "yakshanaadav3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:720971405897:android:49ee553f1377da731f3d98",
+        "android_client_info": {
+          "package_name": "com.yakshanaadav3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbGz5q9sSf-l93jpvjqa8yZC-44ZmkvpQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
