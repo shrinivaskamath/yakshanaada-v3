@@ -6,8 +6,8 @@ package="com.yakshanaadav3">
     <application
       android:name=".MainApplication"
       android:label="@string/app_name"
-      android:icon="@mipmap/yn_icon"
-      android:roundIcon="@mipmap/yn_icon"
+      android:icon="@mipmap/yaksha_app_icon"
+      android:roundIcon="@mipmap/yaksha_app_icon"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
       <activity

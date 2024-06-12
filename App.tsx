@@ -1,4 +1,3 @@
-// App.js
 import React, {useEffect} from 'react';
 import 'react-native-gesture-handler';
 import {NavigationContainer} from '@react-navigation/native';
@@ -12,14 +11,29 @@ import PitchDetector from './components/tuner/pitchdetector';
 import Header from './components/header';
 import firebase from '@react-native-firebase/app';
 import analytics from '@react-native-firebase/analytics';
+import CustomDrawerContent from './components/custom-drawer'; // Import Custom Drawer
 
 enableScreens();
 
 const Drawer = createDrawerNavigator();
 
+export const DarkTheme = {
+  dark: true,
+  colors: {
+    primary: 'gray',
+    background: '#121212',
+    card: '#1f1f1f',
+    text: '#ffffff',
+    border: '#272727',
+    notification: '#ff453a',
+  },
+};
+
 function MyDrawer() {
   return (
-    <Drawer.Navigator initialRouteName="Home">
+    <Drawer.Navigator
+      initialRouteName="Home"
+      drawerContent={props => <CustomDrawerContent {...props} />}>
       <Drawer.Screen
         name="ಯಕ್ಷಶ್ರುತಿ - Yaksha Shruthi"
         component={YakshaShruthi}
@@ -72,7 +86,7 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={DarkTheme}>
       <MyDrawer />
     </NavigationContainer>
   );

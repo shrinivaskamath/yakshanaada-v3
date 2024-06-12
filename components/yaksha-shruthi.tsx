@@ -35,7 +35,6 @@ function YakshaShruthi() {
   }, []);
 
   const playSoundWithFadeIn = (sound: Sound | null, isSound2) => {
-    console.log('fading UP ' + sound);
     if (!sound) return;
 
     if (!isSound2) {
@@ -71,13 +70,11 @@ function YakshaShruthi() {
       sound.setVolume(newVolume);
 
       if (newVolume <= 0.1) {
-        console.log('stopping now...');
         clearInterval(fadeOutInterval); // Stop when volume reaches 0
         sound.stop(() => {
           // sound.release(); // Release the sound resource
           setIsPlaying(false); // Update playing state after stopping the sound
           setIsProcessing(false); // Update stopping state
-          console.log('sound released');
         });
       }
     }, fadeDuration / 100);
@@ -90,11 +87,11 @@ function YakshaShruthi() {
 
     // Stop and release previous sounds if they are playing
     if (fadeEnabled) {
-      if (sound1.current && sound1.current.isPlaying()) {
-        stopSoundWithFadeOut(sound1.current);
+      if (sound1.current) {
+        sound1.current.stop();
       }
-      if (sound2.current && sound2.current.isPlaying()) {
-        stopSoundWithFadeOut(sound2.current);
+      if (sound2.current) {
+        sound2.current.stop();
       }
     } else {
       if (sound1.current && sound1.current.isPlaying()) {
@@ -108,7 +105,6 @@ function YakshaShruthi() {
     // Initialize new sound instances
     const newSound1 = new Sound(getSound(file), (error: any) => {
       if (error) {
-        console.log('failed to load the sound1', error);
         return;
       }
 
@@ -116,11 +112,9 @@ function YakshaShruthi() {
 
       // Start playing the sounds
       if (fadeEnabled) {
-        console.log('playing now');
         playSoundWithFadeIn(sound1.current, false);
         setTimeout(() => {
           if (sound1.current?.isPlaying()) {
-            console.log('starting 2 as 1 is running');
             playSoundWithFadeIn(sound2.current, true);
           }
         }, 4000); // Introduce a delay of 1 second before playing sound2
@@ -129,17 +123,12 @@ function YakshaShruthi() {
           sound1.current.setNumberOfLoops(-1);
           sound1.current.setVolume(0.99);
           sound1.current.play();
-          console.log('SOund1 started...........');
         }
         setTimeout(() => {
-          console.log(JSON.stringify(sound1));
           if (sound1.current?.isPlaying() && sound2.current) {
             sound2.current.setNumberOfLoops(-1);
             sound2.current.setVolume(0.99);
             sound2.current.play();
-            console.log('SOund2 started...........');
-          } else {
-            console.log('SOund2 ignored...........');
           }
         }, 4000); // Introduce a delay of 1 second before playing sound2
       }
@@ -149,7 +138,6 @@ function YakshaShruthi() {
 
     const newSound2 = new Sound(getSound(file), (error: any) => {
       if (error) {
-        console.log('failed to load the sound2', error);
         return;
       }
 
@@ -167,11 +155,8 @@ function YakshaShruthi() {
       playSoundInLoop(playingShruthi);
       return;
     }
-    console.log('in playPauseClick: playing shruti : ' + playingShruthi);
 
     if (fadeEnabled) {
-      console.log('fade enabled : sound.current ' + sound1.current);
-      // Fade effect enabled
       if (sound1.current && sound1.current.isPlaying()) {
         stopSoundWithFadeOut(sound1.current);
       }
@@ -317,10 +302,10 @@ function YakshaShruthi() {
           </TouchableOpacity>
         </View>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Fade Effect</Text>
+          <Text style={styles.switchLabel}>ಮಸುಕು (Fade)</Text>
           <Switch
             trackColor={{false: '#767577', true: '#81b0ff'}}
-            thumbColor={fadeEnabled ? 'red' : '#f4f3f4'}
+            thumbColor={fadeEnabled ? '#961A1D' : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
             onValueChange={() =>
               setFadeEnabled(previousState => !previousState)

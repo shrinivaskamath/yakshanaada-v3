@@ -35,7 +35,6 @@ function TanpuraM() {
   }, []);
 
   const playSoundWithFadeIn = (sound: Sound | null) => {
-    console.log('fading UP ' + sound);
     if (!sound) return;
 
     setIsProcessing(true);
@@ -47,7 +46,6 @@ function TanpuraM() {
       const currentVolume = sound.getVolume();
       const newVolume = Math.min(currentVolume + 3 / fadeDuration, 1);
       sound.setVolume(newVolume);
-      console.log('vol : ' + newVolume);
       if (newVolume >= 0.99) {
         clearInterval(fadeInInterval); // Stop when volume reaches 1
         setIsProcessing(false); // Stop processing
@@ -72,7 +70,6 @@ function TanpuraM() {
           // sound.release(); // Release the sound resource
           setIsPlaying(false); // Update playing state after stopping the sound
           setIsProcessing(false); // Update stopping state
-          console.log('sound released');
         });
       }
     }, fadeDuration / 100);
@@ -103,7 +100,6 @@ function TanpuraM() {
     // Initialize new sound instances
     const newSound1 = new Sound(getSound(file), (error: any) => {
       if (error) {
-        console.log('failed to load the sound1', error);
         return;
       }
 
@@ -111,7 +107,6 @@ function TanpuraM() {
 
       // Start playing the sounds
       if (fadeEnabled) {
-        console.log('playing now');
         playSoundWithFadeIn(sound1.current);
         setTimeout(() => {
           playSoundWithFadeIn(sound2.current);
@@ -136,7 +131,6 @@ function TanpuraM() {
 
     const newSound2 = new Sound(getSound(file), (error: any) => {
       if (error) {
-        console.log('failed to load the sound2', error);
         return;
       }
 
@@ -154,10 +148,8 @@ function TanpuraM() {
       playSoundInLoop(playingShruthi);
       return;
     }
-    console.log('in playPauseClick: playing shruti : ' + playingShruthi);
 
     if (fadeEnabled) {
-      console.log('fade enabled : sound.current ' + sound1.current);
       // Fade effect enabled
       if (sound1.current && sound2.current) {
         stopSoundWithFadeOut(sound1.current);
@@ -302,7 +294,7 @@ function TanpuraM() {
           </TouchableOpacity>
         </View>
         <View style={styles.switchContainer}>
-          <Text style={styles.switchLabel}>Fade Effect</Text>
+          <Text style={styles.switchLabel}>ಮಸುಕು (Fade)</Text>
           <Switch
             trackColor={{false: '#767577', true: '#81b0ff'}}
             thumbColor={fadeEnabled ? 'red' : '#f4f3f4'}

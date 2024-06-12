@@ -55,7 +55,6 @@ const Bhagavatha = () => {
     } catch (error) {
       console.error('Error during audio playback:', error);
     } finally {
-      console.log('setting false');
       setIsPlaying(false);
     }
   };
@@ -64,25 +63,19 @@ const Bhagavatha = () => {
     analytics().logEvent('Bhagavatha_playing_' + note);
     return new Promise(resolve => {
       const soundPath = getSound(note);
-      console.log(`Loading sound from: ${note}`);
 
       const newsound = new Sound(soundPath, error => {
         if (error) {
-          console.log('Failed to load the sound', error);
           resolve(); // Resolve even on error to avoid blocking the loop
           return;
         }
         setCurrentSound(newsound);
         setBlinkingIndex(c);
-        newsound.play(() => {
-          console.log(`Successfully started playing ${note}`);
-        });
-        //   console.log('calling timeout');
+        newsound.play(() => {});
         setTimeout(() => {
           newsound.stop(() => {
             setBlinkingIndex(null);
             setCurrentSound(null);
-            console.log(`Sound ${note} stopped`);
             newsound.release(); // Release the sound resource
             resolve(); // Resolve the promise to continue to the next sound
           });
@@ -445,7 +438,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     borderWidth: 2, // Border width
-    borderColor: 'red', // Border color
+    borderColor: '#961A1D', // Border color
   },
   buttonText: {
     color: '#ffffff',
@@ -465,6 +458,7 @@ const styles = StyleSheet.create({
   },
   dropdownLabel: {
     fontSize: 15,
+    color: '#961A1D',
   },
   row: {
     flexDirection: 'row',
@@ -478,7 +472,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ddd',
   },
   blinkingBlock: {
-    backgroundColor: '#ff0000', // You can change the color to indicate blinking
+    backgroundColor: '#961A1D', // You can change the color to indicate blinking
   },
   playButton: {
     marginTop: 20,
