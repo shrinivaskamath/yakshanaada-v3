@@ -40,5 +40,41 @@
     "down": [1, -3, -2, -3, -2, -2],
     "swaraUp": ["S", "R", "G", "P", "D", "S"],
     "swaraDown": ["S", "D", "P", "G", "R", "S"]
+  },
+  "Shivaranjini": {
+    "up": [1, 2, 1, 4, 2, 3],
+    "down": [1, -3, -2, -4, -1, -2],
+    "swaraUp": ["S", "R", "g", "P", "D", "S"],
+    "swaraDown": ["S", "D", "P", "g", "R", "S"]
+  },
+  "Revathi": {
+    "up": [1, 1, 4, 2, 3, 2],
+    "down": [1, -2, -3, -2, -4, -1],
+    "swaraUp": ["S", "r", "m", "P", "n", "S"],
+    "swaraDown": ["S", "n", "P", "m", "r", "S"]
+  },
+  "Shubhapantuvarali": {
+    "up": [1, 1, 2, 3, 1, 1, 3, 1],
+    "down": [1, -1, -3, -1, -1, -3, -2, -1],
+    "swaraUp": ["S", "r", "g", "M", "P", "d", "N", "S"],
+    "swaraDown": ["S", "N", "d", "P", "M", "g", "r", "S"]
+  },
+  "Chakravaaka": {
+    "up": [1, 1, 3, 1, 2, 2, 1, 2],
+    "down": [1, -2, -1, -2, -2, -1, -3, -1],
+    "swaraUp": ["S", "r", "G", "m", "P", "D", "n", "S"],
+    "swaraDown": ["S", "n", "D", "P", "m", "G", "r", "S"]
+  },
+  "Amrithavarshini": {
+    "up": [1, 4, 2, 1, 4, 1],
+    "down": [1, -1, -4, -1, -2, -4],
+    "swaraUp": ["S", "G", "M", "P", "N", "S"],
+    "swaraDown": ["S", "N", "P", "M", "G", "S"]
+  },
+  "Charukeshi": {
+    "up": [1, 2, 2, 1, 2, 1, 2, 2],
+    "down": [1, -2, -2, -1, -2, -1, -2, -2],
+    "swaraUp": ["S", "R", "G", "m", "P", "d", "n", "S"],
+    "swaraDown": ["S", "n", "d", "P", "m", "G", "R", "S"]
   }
 }
