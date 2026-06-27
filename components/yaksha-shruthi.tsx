@@ -9,24 +9,38 @@ import {
 } from 'react-native';
 import Sound from 'react-native-sound';
 import analytics from '@react-native-firebase/analytics';
-import KeepAwake from 'react-native-keep-awake';
 import Slider from '@react-native-community/slider'; // Volume control
+import {startPlaybackService, stopPlaybackService} from './audio-service';
+import {useTheme} from './theme';
+import {usePlayback} from './playback';
 
 Sound.setCategory('Playback');
 
 function YakshaShruthi() {
+  const {colors} = useTheme();
+  const {setPlaying} = usePlayback();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
   const [playingShruthi, setPlayingShruthi] = React.useState('e');
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [isProcessing, setIsProcessing] = React.useState(false);
   const [volume, setVolume] = React.useState(1.0); // ✅ Volume state
 
+  React.useEffect(() => {
+    setPlaying(isPlaying);
+  }, [isPlaying, setPlaying]);
+
+  React.useEffect(() => () => setPlaying(false), [setPlaying]);
+
   const sound1 = React.useRef<Sound | null>(null);
   const sound2 = React.useRef<Sound | null>(null);
-  const loopTimer = React.useRef<NodeJS.Timeout | null>(null);
-  const currentPlayer = React.useRef<1 | 2>(1);
+  const loadedCount = React.useRef<number>(0);
+  // Real file length, measured from the loaded sound (works for any file
+  // length, e.g. the ~8 minute shruti files). Updated on load via getDuration().
+  const durationMs = React.useRef<number>(480000);
 
-  const FILE_DURATION_MS = 35000;
-  const START_OVERLAP_MS = 500;
+  // Fallback only, used in the rare case the real duration can't be read.
+  // Set to roughly the length of your audio files (~8 minutes here).
+  const FILE_DURATION_MS = 480000;
 
   React.useEffect(() => {
     return () => {
@@ -35,10 +49,12 @@ function YakshaShruthi() {
   }, []);
 
   const stopSounds = () => {
+    loadedCount.current = 0;
     if (sound1.current) sound1.current.stop().release();
     if (sound2.current) sound2.current.stop().release();
-    if (loopTimer.current) clearTimeout(loopTimer.current);
-    KeepAwake.deactivate();
+    sound1.current = null;
+    sound2.current = null;
+    stopPlaybackService();
     setIsPlaying(false);
   };
 
@@ -46,40 +62,55 @@ function YakshaShruthi() {
     analytics().logEvent('yaksha_shruti_playing_' + file);
     setPlayingShruthi(file);
     stopSounds();
+    startPlaybackService();
 
     const source = getSound(file);
 
+    // Two copies of the same file both loop NATIVELY forever (no JS timers, so
+    // it keeps going with the screen off). They are phase-offset by half the
+    // file length, so each copy's loop-boundary gap is covered by the other
+    // copy playing in its full-volume steady region.
     const s1 = new Sound(source, error => {
       if (error) return;
       sound1.current = s1;
-      s1.setVolume(volume);
-      s1.play(() => {});
-      scheduleNextPlay(file, 2);
-      KeepAwake.activate();
-      setIsPlaying(true);
+      const seconds = s1.getDuration();
+      if (seconds && seconds > 0) {
+        durationMs.current = seconds * 1000;
+      }
+      onSoundLoaded();
     });
 
     const s2 = new Sound(source, error => {
       if (error) return;
       sound2.current = s2;
-      s2.setVolume(volume);
+      onSoundLoaded();
     });
   };
 
-  const scheduleNextPlay = (file: string, nextPlayer: 1 | 2) => {
-    if (loopTimer.current) clearTimeout(loopTimer.current);
+  // Starts both copies once they are both loaded, with a half-file phase offset.
+  const onSoundLoaded = () => {
+    loadedCount.current += 1;
+    if (loadedCount.current < 2) return;
 
-    loopTimer.current = setTimeout(() => {
-      const nextSound = nextPlayer === 1 ? sound1.current : sound2.current;
-      if (nextSound && nextSound.isLoaded()) {
-        nextSound.stop(() => {
-          nextSound.setVolume(volume);
-          nextSound.play(() => {});
-          currentPlayer.current = nextPlayer;
-          scheduleNextPlay(file, nextPlayer === 1 ? 2 : 1);
-        });
-      }
-    }, FILE_DURATION_MS - START_OVERLAP_MS);
+    const s1 = sound1.current;
+    const s2 = sound2.current;
+    if (!s1 || !s2) return;
+
+    const offsetSec = (durationMs.current || FILE_DURATION_MS) / 1000 / 2;
+
+    s1.setVolume(volume);
+    s1.setNumberOfLoops(-1);
+    s1.setCurrentTime(0);
+    s1.play(() => {});
+
+    s2.setVolume(volume);
+    s2.setNumberOfLoops(-1);
+    s2.play(() => {});
+    // Seek the second copy to the middle so its loop boundary never lines up
+    // with the first copy's boundary.
+    s2.setCurrentTime(offsetSec);
+
+    setIsPlaying(true);
   };
 
   const playPauseClick = () => {
@@ -168,26 +199,6 @@ function YakshaShruthi() {
           <ShruthiButton label="B" labelKn="ಬಿಳಿ 7" shruthi="b" />
         </View>
 
-        {/* 🔉 Volume Control Slider */}
-        <View style={{marginVertical: 10, width: '95%'}}>
-          <Text style={{color: 'white', textAlign: 'center', marginBottom: 3}}>
-            ಧ್ವನಿ (Volume)
-          </Text>
-          <Slider
-            value={volume}
-            onValueChange={value => {
-              setVolume(value);
-              if (sound1.current) sound1.current.setVolume(value);
-              if (sound2.current) sound2.current.setVolume(value);
-            }}
-            minimumValue={0.0}
-            maximumValue={1.0}
-            minimumTrackTintColor="#FFFFFF"
-            maximumTrackTintColor="#888888"
-            thumbTintColor="#FFFFFF"
-          />
-        </View>
-
         {/* ▶️ / ⏸ Button */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -209,41 +220,58 @@ function YakshaShruthi() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {flex: 1, backgroundColor: '#212121'},
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 10,
-  },
-  row: {flexDirection: 'row', justifyContent: 'space-around', marginBottom: 10},
-  button: {
-    backgroundColor: '#424242',
-    width: 150,
-    height: 70,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 5,
-  },
-  hilight: {borderColor: 'white', borderWidth: 2},
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-  stopButton: {
-    backgroundColor: '#424242',
-    width: 60,
-    height: 60,
-    borderRadius: 35,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 5, //
-    borderColor: 'white',
-  },
-  disabledButton: {backgroundColor: '#666666'},
-  buttonImageIconStyle: {width: 50, height: 50, resizeMode: 'contain'},
-  text: {color: 'white', textAlign: 'center', fontSize: 15, fontWeight: '700'},
-});
+const createStyles = (colors: import('./theme').ThemeColors) =>
+  StyleSheet.create({
+    safeArea: {flex: 1, backgroundColor: colors.background},
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 10,
+    },
+    row: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginBottom: 10,
+    },
+    button: {
+      backgroundColor: colors.surface,
+      width: 150,
+      height: 70,
+      borderRadius: 10,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginHorizontal: 5,
+    },
+    hilight: {borderColor: colors.border, borderWidth: 2},
+    buttonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginTop: 10,
+    },
+    stopButton: {
+      backgroundColor: colors.surface,
+      width: 60,
+      height: 60,
+      borderRadius: 35,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 5,
+      borderColor: colors.border,
+    },
+    disabledButton: {backgroundColor: colors.disabled},
+    buttonImageIconStyle: {
+      width: 50,
+      height: 50,
+      resizeMode: 'contain',
+      tintColor: colors.textOnSurface,
+    },
+    text: {
+      color: colors.textOnSurface,
+      textAlign: 'center',
+      fontSize: 15,
+      fontWeight: '700',
+    },
+  });
+
+export default YakshaShruthi;

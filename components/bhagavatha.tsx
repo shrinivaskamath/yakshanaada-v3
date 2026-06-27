@@ -4,8 +4,27 @@ import {Picker} from '@react-native-picker/picker';
 import {Text, TouchableOpacity, StyleSheet} from 'react-native';
 import Sound from 'react-native-sound';
 import analytics from '@react-native-firebase/analytics';
+import {useTheme} from './theme';
+
+const RAAGA_LABELS: {[key: string]: string} = {
+  naati: 'ನಾಟಿ (Jog)',
+  kaushiki: 'ಕೌಶಿಕ್ ಧ್ವನಿ (Kaushiki)',
+  hindola: 'ಹಿಂದೋಳ (Hindola)',
+  madyamavati: 'ಮಧ್ಯಮಾವತಿ (Madyamavati)',
+  kalyani: 'ಕಲ್ಯಾಣಿ (Kalyani)',
+  abheri: 'ಅಭೇರಿ (Abheri)',
+  mohana: 'ಮೋಹನ (Bhoop)',
+  Shivaranjini: 'ಶಿವರಂಜಿನಿ (Shivaranjini)',
+  Revathi: 'ರೇವತಿ (Revathi)',
+  Shubhapantuvarali: 'ಶುಭಪಂತುವರಾಳಿ (Shubhapantuvarali)',
+  Chakravaaka: 'ಚಕ್ರವಾಕ (Chakravaaka)',
+  Amrithavarshini: 'ಅಮೃತವರ್ಷಿಣಿ (Amrithavarshini)',
+  Charukeshi: 'ಚಾರುಕೇಶಿ (Charukeshi)',
+};
 
 const Bhagavatha = () => {
+  const {colors} = useTheme();
+  const styles = React.useMemo(() => createStyles(colors), [colors]);
   const [base, setBase] = useState('1');
   const [raaga, setRaaga] = useState('naati');
   const [tempo, setTempo] = useState('1000');
@@ -322,41 +341,14 @@ const Bhagavatha = () => {
           style={styles.dropdown}
           selectedValue={raaga}
           onValueChange={value => setRaaga(value)}>
-          <Picker.Item
-            label="ನಾಟಿ (Jog)"
-            value="naati"
-            style={styles.dropdownLabel}
-          />
-          <Picker.Item
-            label="ಕೌಶಿಕ್ ಧ್ವನಿ (Kaushiki)"
-            value="kaushiki"
-            style={styles.dropdownLabel}
-          />
-          <Picker.Item
-            label="ಹಿಂದೋಳ (Hindola)"
-            value="hindola"
-            style={styles.dropdownLabel}
-          />
-          <Picker.Item
-            label="ಮಧ್ಯಮಾವತಿ (madyamavati)"
-            value="madyamavati"
-            style={styles.dropdownLabel}
-          />
-          <Picker.Item
-            label="ಕಲ್ಯಾಣಿ (kalyani)"
-            value="kalyani"
-            style={styles.dropdownLabel}
-          />
-          <Picker.Item
-            label="ಅಭೇರಿ (abheri)"
-            value="abheri"
-            style={styles.dropdownLabel}
-          />
-          <Picker.Item
-            label="ಮೋಹನ (bhoop)"
-            value="mohana"
-            style={styles.dropdownLabel}
-          />
+          {Object.keys(readAndParseJson() || {}).map(key => (
+            <Picker.Item
+              key={key}
+              label={RAAGA_LABELS[key] || key}
+              value={key}
+              style={styles.dropdownLabel}
+            />
+          ))}
         </Picker>
       </View>
       <View style={styles.dropdownContainer}>
@@ -426,67 +418,69 @@ const Bhagavatha = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#212121',
-    padding: 16,
-  },
-  button: {
-    backgroundColor: '#424242',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-    borderWidth: 2, // Border width
-    borderColor: '#961A1D', // Border color
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontSize: 18,
-    textAlign: 'center',
-  },
-  dropdownContainer: {
-    backgroundColor: '#424242',
-    borderRadius: 8,
-    marginBottom: 16,
-    height: 40,
-    paddingLeft: 10,
-    color: '#ffffff',
-  },
-  dropdown: {
-    color: 'red',
-  },
-  dropdownLabel: {
-    fontSize: 15,
-    color: '#961A1D',
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  block: {
-    width: 35,
-    height: 35,
-    margin: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ddd',
-  },
-  blinkingBlock: {
-    backgroundColor: '#961A1D', // You can change the color to indicate blinking
-  },
-  playButton: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#424242',
-    borderRadius: 5,
-  },
-  text: {
-    fontSize: 16,
-    color: 'black',
-  },
-  boldText: {
-    fontWeight: 'bold',
-  },
-});
+const createStyles = (colors: import('./theme').ThemeColors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      padding: 16,
+    },
+    button: {
+      backgroundColor: colors.surface,
+      padding: 12,
+      borderRadius: 8,
+      marginBottom: 16,
+      borderWidth: 2,
+      borderColor: colors.accent,
+    },
+    buttonText: {
+      color: colors.textOnSurface,
+      fontSize: 18,
+      textAlign: 'center',
+    },
+    dropdownContainer: {
+      backgroundColor: colors.surface,
+      borderRadius: 8,
+      marginBottom: 16,
+      height: 40,
+      paddingLeft: 10,
+    },
+    dropdown: {
+      color: colors.accent,
+    },
+    dropdownLabel: {
+      fontSize: 15,
+      color: colors.accent,
+    },
+    row: {
+      flexDirection: 'row',
+    },
+    block: {
+      width: 35,
+      height: 35,
+      margin: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.blockBackground,
+      borderWidth: StyleSheet.hairlineWidth,
+      borderColor: colors.accent,
+    },
+    blinkingBlock: {
+      backgroundColor: colors.accent,
+    },
+    playButton: {
+      marginTop: 20,
+      padding: 10,
+      backgroundColor: colors.surface,
+      borderRadius: 5,
+    },
+    text: {
+      fontSize: 16,
+      color: colors.blockText,
+    },
+    boldText: {
+      fontWeight: 'bold',
+    },
+  });
 
 export default Bhagavatha;
