@@ -60,6 +60,44 @@ export async function loadBuffer(url: string): Promise<AudioBuffer> {
   return promise;
 }
 
+// Downloads a list of audio URLs into the browser / service-worker cache so a
+// later play() reads them from disk instead of the network. It does NOT decode
+// them (decoded 8-minute buffers are huge - hundreds of MB each - so decoding
+// all 12 up front would exhaust memory). Concurrency-limited and idempotent.
+const prefetched = new Set<string>();
+
+export async function prefetchUrls(
+  urls: string[],
+  options: { concurrency?: number; onProgress?: (done: number, total: number) => void } = {},
+): Promise<void> {
+  const { concurrency = 4, onProgress } = options;
+  const todo = urls.filter((u) => !prefetched.has(u));
+  const total = urls.length;
+  let done = total - todo.length;
+  onProgress?.(done, total);
+
+  let cursor = 0;
+  const worker = async () => {
+    while (cursor < todo.length) {
+      const url = todo[cursor++];
+      try {
+        const res = await fetch(url, { cache: 'force-cache' });
+        // Fully read the body so the response is committed to the cache.
+        await res.arrayBuffer();
+        prefetched.add(url);
+      } catch {
+        // Ignore individual failures; play() will retry the fetch on demand.
+      }
+      done++;
+      onProgress?.(done, total);
+    }
+  };
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, todo.length) }, worker),
+  );
+}
+
 // Continuous looping player for shruthi / tanpura.
 export class LoopPlayer {
   private source: AudioBufferSourceNode | null = null;
