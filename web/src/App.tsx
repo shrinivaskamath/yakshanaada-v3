@@ -28,9 +28,9 @@ export default function App() {
   const current = SCREENS.find((s) => s.id === screen)!;
 
   useEffect(() => {
-    document.title = current.title;
+    document.title = 'Yakshanaada';
     logScreenView(current.id);
-  }, [current.id, current.title]);
+  }, [current.id]);
 
   return (
     <div className="app" style={{ backgroundColor: colors.background }}>

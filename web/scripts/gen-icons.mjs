@@ -32,4 +32,5 @@ async function make(size, file, padRatio = 0.12) {
 await make(180, 'apple-touch-icon.png');
 await make(192, 'icon-192.png');
 await make(512, 'icon-512.png');
+await make(64, 'favicon.png', 0.08);
 console.log('done');
