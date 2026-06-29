@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from './ThemeContext';
+import { logScreenView } from './firebase';
 import Shruthi from './screens/Shruthi';
 import Tanpura from './screens/Tanpura';
 import Bhagavatha from './screens/Bhagavatha';
@@ -23,7 +24,8 @@ export default function App() {
 
   useEffect(() => {
     document.title = current.title;
-  }, [current.title]);
+    logScreenView(current.id);
+  }, [current.id, current.title]);
 
   return (
     <div className="app" style={{ backgroundColor: colors.background }}>

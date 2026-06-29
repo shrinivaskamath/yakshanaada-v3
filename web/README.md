@@ -37,6 +37,29 @@ If you ever rename the repo or use a custom domain, update `base` in
 [vite.config.ts](vite.config.ts) (and the `start_url`/`scope` in the PWA
 manifest) to match.
 
+## Visit analytics (Firebase / GA4)
+
+Site visits are tracked with Firebase Analytics reusing the existing
+`yakshanaadav3` project (the same dashboard as the Android app). No backend is
+needed - Google stores and reports the data.
+
+One-time setup:
+
+1. Firebase console -> **Project settings -> Your apps -> Add app -> Web (`</>`)**.
+   Register a web app (e.g. "Yakshanaada Web").
+2. Copy the generated config, especially `appId` and `measurementId` (the
+   `G-XXXX` id - this is what enables Google Analytics).
+3. Put the values either in [src/firebase.ts](src/firebase.ts) or in a `.env`
+   file (copy [.env.example](.env.example)). For CI deploys, add them as repo
+   secrets and pass them as `VITE_FIREBASE_*` env vars in the build step.
+4. In the Firebase console, make sure **Google Analytics is enabled** for the
+   project. Visit counts appear under Analytics -> Realtime / Events
+   (`page_view`), and per-feature usage under the `screen_view` event.
+
+Until `appId`/`measurementId` are filled in, analytics is skipped silently and
+the app still works normally. Note that ad/tracking blockers can block GA4, so
+counts are a slight undercount.
+
 ## Notes
 
 - Audio (`.mp3`, `.m4a`) plays in modern Safari/Chrome. Playback and the mic
