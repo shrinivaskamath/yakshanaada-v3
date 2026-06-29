@@ -73,6 +73,17 @@ select {
   line-height: 1;
 }
 
+.visit-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+  white-space: nowrap;
+}
+
 .screen {
   flex: 1;
   overflow-y: auto;

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from './ThemeContext';
 import { logScreenView } from './firebase';
+import { useVisitCount } from './useVisitCount';
 import Shruthi from './screens/Shruthi';
 import Tanpura from './screens/Tanpura';
 import Bhagavatha from './screens/Bhagavatha';
@@ -19,6 +20,7 @@ export default function App() {
   const { colors, theme, toggleTheme } = useTheme();
   const [screen, setScreen] = useState<ScreenId>('shruthi');
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const visitCount = useVisitCount();
 
   const current = SCREENS.find((s) => s.id === screen)!;
 
@@ -45,6 +47,15 @@ export default function App() {
           &#9776;
         </button>
         <h1 style={{ color: colors.headerIcon }}>{current.title}</h1>
+        {visitCount != null && (
+          <span
+            className="visit-count"
+            title="Total visits"
+            style={{ color: colors.headerIcon }}
+          >
+            {'\uD83D\uDC41'} {visitCount.toLocaleString()}
+          </span>
+        )}
         <button
           className="icon-btn"
           aria-label="Toggle theme"

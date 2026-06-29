@@ -60,6 +60,16 @@ Until `appId`/`measurementId` are filled in, analytics is skipped silently and
 the app still works normally. Note that ad/tracking blockers can block GA4, so
 counts are a slight undercount.
 
+### On-page visit counter
+
+The header shows a live total-visits number (top right) via a free, no-backend
+hit counter ([Abacus](https://abacus.jasoncameron.dev)). See
+[src/useVisitCount.ts](src/useVisitCount.ts). This counts page loads, so it is
+higher and less precise than the GA4 visitor stats - treat it as a vanity
+counter. The namespace/key are set at the top of that file; the counter is
+created automatically on the first visit. If the service is unreachable the
+number is simply hidden.
+
 ## Notes
 
 - Audio (`.mp3`, `.m4a`) plays in modern Safari/Chrome. Playback and the mic
