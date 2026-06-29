@@ -2,38 +2,59 @@
 import React from 'react';
 import {
   DrawerContentScrollView,
-  DrawerItemList,
   DrawerItem,
 } from '@react-navigation/drawer';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, StyleSheet} from 'react-native';
+import {useTheme} from './theme';
 
-const CustomDrawerContent = props => (
-  <DrawerContentScrollView {...props} style={styles.container}>
-    {/* <View style={styles.header}>
-      <Text style={styles.headerText}>ಯಕ್ಷನಾದ</Text>
-    </View> */}
-    {/* <DrawerItemList {...props} labelStyle={styles.labelStyle} /> */}
-    {props.state.routeNames.map((name, index) => (
+const CustomDrawerContent = props => {
+  const {theme, colors, toggleTheme} = useTheme();
+
+  return (
+    <DrawerContentScrollView
+      {...props}
+      style={[styles.container, {backgroundColor: colors.drawerBackground}]}>
+      {props.state.routeNames.map((name, index) => (
+        <DrawerItem
+          key={index}
+          label={name}
+          labelStyle={[styles.labelStyle, {color: colors.drawerText}]}
+          onPress={() => props.navigation.navigate(name)}
+          focused={props.state.index === index}
+          activeBackgroundColor={colors.drawerActiveBackground}
+          style={styles.drawerItem}
+        />
+      ))}
+
+      <View style={[styles.separator, {backgroundColor: colors.border}]} />
+
       <DrawerItem
-        key={index}
-        label={name}
-        labelStyle={styles.labelStyle}
-        onPress={() => props.navigation.navigate(name)}
-        focused={props.state.index === index}
+        label={
+          theme === 'dark'
+            ? '\u2600\uFE0F  ಬೆಳಕು ಬರ್ಲಿ - Light theme'
+            : '\u{1F319}  ಕತ್ತಲಾಗ್ಲಿ - Dark theme'
+        }
+        labelStyle={[styles.labelStyle, {color: colors.drawerText}]}
+        onPress={toggleTheme}
         style={styles.drawerItem}
       />
-    ))}
-  </DrawerContentScrollView>
-);
+    </DrawerContentScrollView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212',
   },
   labelStyle: {
-    color: '#ffffff',
     fontSize: 16,
+  },
+  drawerItem: {},
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    opacity: 0.4,
   },
 });
 

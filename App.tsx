@@ -4,14 +4,15 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import {enableScreens} from 'react-native-screens';
 import YakshaShruthi from './components/yaksha-shruthi';
-import TanpuraP from './components/tanpura-p';
-import TanpuraM from './components/tanpura-m';
+import Tanpura from './components/tanpura';
 import Bhagavatha from './components/bhagavatha';
 import PitchDetector from './components/tuner/pitchdetector';
 import Header from './components/header';
 import firebase from '@react-native-firebase/app';
 import analytics from '@react-native-firebase/analytics';
 import CustomDrawerContent from './components/custom-drawer'; // Import Custom Drawer
+import {ThemeProvider, useTheme} from './components/theme';
+import {PlaybackProvider} from './components/playback';
 
 enableScreens();
 
@@ -29,10 +30,22 @@ export const DarkTheme = {
   },
 };
 
+export const LightTheme = {
+  dark: false,
+  colors: {
+    primary: '#961A1D',
+    background: '#fafafa',
+    card: '#ffffff',
+    text: '#1a1a1a',
+    border: '#dddddd',
+    notification: '#ff453a',
+  },
+};
+
 function MyDrawer() {
   return (
     <Drawer.Navigator
-      initialRouteName="Home"
+      initialRouteName="ಯಕ್ಷಶ್ರುತಿ - Yaksha Shruthi"
       drawerContent={props => <CustomDrawerContent {...props} />}>
       <Drawer.Screen
         name="ಯಕ್ಷಶ್ರುತಿ - Yaksha Shruthi"
@@ -40,13 +53,8 @@ function MyDrawer() {
         options={{header: props => <Header {...props} />}}
       />
       <Drawer.Screen
-        name="ತಾನ್ಪುರ ಮ - Tanpura Ma"
-        component={TanpuraM}
-        options={{header: props => <Header {...props} />}}
-      />
-      <Drawer.Screen
-        name="ತಾನ್ಪುರ ಪ - Tanpura Pa"
-        component={TanpuraP}
+        name="ತಾನ್ಪುರ - Tanpura"
+        component={Tanpura}
         options={{header: props => <Header {...props} />}}
       />
       <Drawer.Screen
@@ -86,7 +94,18 @@ export default function App() {
   }, []);
 
   return (
-    <NavigationContainer theme={DarkTheme}>
+    <ThemeProvider>
+      <PlaybackProvider>
+        <ThemedNavigation />
+      </PlaybackProvider>
+    </ThemeProvider>
+  );
+}
+
+function ThemedNavigation() {
+  const {theme} = useTheme();
+  return (
+    <NavigationContainer theme={theme === 'dark' ? DarkTheme : LightTheme}>
       <MyDrawer />
     </NavigationContainer>
   );

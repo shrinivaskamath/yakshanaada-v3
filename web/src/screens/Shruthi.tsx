@@ -1,0 +1,90 @@
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTheme } from '../ThemeContext';
+import { LoopPlayer } from '../audio/engine';
+import { NOTE_LIST, shruthiUrl, type NoteKey } from '../audio/paths';
+
+export default function Shruthi() {
+  const { colors } = useTheme();
+  const [playingNote, setPlayingNote] = useState<NoteKey>('e');
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [volume, setVolume] = useState(1);
+  const player = useMemo(() => new LoopPlayer(volume), []);
+  const playerRef = useRef(player);
+  playerRef.current = player;
+
+  useEffect(() => {
+    return () => playerRef.current.stop();
+  }, []);
+
+  const playNote = async (note: NoteKey) => {
+    setPlayingNote(note);
+    await player.play(shruthiUrl(note));
+    setIsPlaying(true);
+  };
+
+  const togglePlay = async () => {
+    if (isPlaying) {
+      player.stop();
+      setIsPlaying(false);
+    } else {
+      await playNote(playingNote);
+    }
+  };
+
+  const onVolume = (v: number) => {
+    setVolume(v);
+    player.setVolume(v);
+  };
+
+  return (
+    <div className="center-col">
+      <div className="note-grid">
+        {NOTE_LIST.map((n) => {
+          const active = playingNote === n.key;
+          return (
+            <button
+              key={n.key}
+              className="note-btn"
+              onClick={() => playNote(n.key)}
+              style={{
+                backgroundColor: colors.surface,
+                color: colors.textOnSurface,
+                borderColor: active ? colors.border : 'transparent',
+              }}
+            >
+              <span>{n.labelKn}</span>
+              <span>{n.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="volume-row">
+        <span style={{ fontSize: 18 }}>{'\uD83D\uDD08'}</span>
+        <input
+          type="range"
+          min={0}
+          max={1}
+          step={0.01}
+          value={volume}
+          onChange={(e) => onVolume(Number(e.target.value))}
+          aria-label="Volume"
+        />
+        <span style={{ fontSize: 18 }}>{'\uD83D\uDD0A'}</span>
+      </div>
+
+      <button
+        className="play-btn"
+        onClick={togglePlay}
+        style={{
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          color: colors.textOnSurface,
+        }}
+        aria-label={isPlaying ? 'Pause' : 'Play'}
+      >
+        {isPlaying ? '\u23F8' : '\u25B6'}
+      </button>
+    </div>
+  );
+}

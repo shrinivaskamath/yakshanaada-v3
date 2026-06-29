@@ -1,4 +1,4 @@
-package com.yakshanaadav3
+package com.lovoctech.yakshanaada
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

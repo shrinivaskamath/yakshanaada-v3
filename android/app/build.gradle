@@ -75,14 +75,19 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "com.yakshanaadav3"
+    namespace "com.lovoctech.yakshanaada"
     defaultConfig {
-        applicationId "com.yakshanaadav3"
+        applicationId "com.lovoctech.yakshanaada"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 12
+        versionName "1.12"
     }
+    packagingOptions {
+    jniLibs {
+      useLegacyPackaging true
+    }
+  }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
