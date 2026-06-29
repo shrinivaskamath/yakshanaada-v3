@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from './ThemeContext';
+import { usePlayback } from './PlaybackContext';
 import { logScreenView } from './firebase';
 import { useVisitCount } from './useVisitCount';
+import { assetUrl } from './audio/engine';
 import Shruthi from './screens/Shruthi';
 import Tanpura from './screens/Tanpura';
 import Bhagavatha from './screens/Bhagavatha';
@@ -18,6 +20,7 @@ const SCREENS: { id: ScreenId; title: string }[] = [
 
 export default function App() {
   const { colors, theme, toggleTheme } = useTheme();
+  const { isPlaying } = usePlayback();
   const [screen, setScreen] = useState<ScreenId>('shruthi');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const visitCount = useVisitCount();
@@ -46,7 +49,18 @@ export default function App() {
         >
           &#9776;
         </button>
-        <h1 style={{ color: colors.headerIcon }}>{current.title}</h1>
+        <img
+          className={`brand-logo${isPlaying ? ' playing' : ''}`}
+          src={assetUrl('logo.png')}
+          alt="Yakshanaada logo"
+        />
+        <div className="brand-text">
+          <span className="brand-title" style={{ color: colors.accent }}>
+            ಯಕ್ಷನಾದ
+          </span>
+          <span className="brand-tagline">ಯಕ್ಷಧ್ರುವ ಪಟ್ಲಾಭಿಮಾನಿ</span>
+        </div>
+        <div style={{ flex: 1 }} />
         {visitCount != null && (
           <span
             className="visit-count"

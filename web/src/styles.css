@@ -62,6 +62,49 @@ select {
   text-overflow: ellipsis;
 }
 
+.brand-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  transform-origin: center;
+}
+
+.brand-logo.playing {
+  transform: scale(1.18);
+  animation: bobble 0.9s ease-in-out infinite;
+}
+
+@keyframes bobble {
+  0% {
+    transform: scale(1.18) rotate(-9deg);
+  }
+  50% {
+    transform: scale(1.18) rotate(9deg);
+  }
+  100% {
+    transform: scale(1.18) rotate(-9deg);
+  }
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+  min-width: 0;
+}
+
+.brand-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.brand-tagline {
+  font-size: 11px;
+  color: gray;
+  white-space: nowrap;
+}
+
 .icon-btn {
   width: 40px;
   height: 40px;

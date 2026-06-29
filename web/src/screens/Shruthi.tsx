@@ -1,20 +1,28 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from '../ThemeContext';
+import { usePlayback } from '../PlaybackContext';
 import { LoopPlayer } from '../audio/engine';
 import { NOTE_LIST, shruthiUrl, type NoteKey } from '../audio/paths';
 
 export default function Shruthi() {
   const { colors } = useTheme();
+  const { setPlaying } = usePlayback();
   const [playingNote, setPlayingNote] = useState<NoteKey>('e');
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(1);
-  const player = useMemo(() => new LoopPlayer(volume), []);
+  const player = useMemo(() => new LoopPlayer(1), []);
   const playerRef = useRef(player);
   playerRef.current = player;
 
   useEffect(() => {
-    return () => playerRef.current.stop();
-  }, []);
+    setPlaying(isPlaying);
+  }, [isPlaying, setPlaying]);
+
+  useEffect(() => {
+    return () => {
+      playerRef.current.stop();
+      setPlaying(false);
+    };
+  }, [setPlaying]);
 
   const playNote = async (note: NoteKey) => {
     setPlayingNote(note);
@@ -29,11 +37,6 @@ export default function Shruthi() {
     } else {
       await playNote(playingNote);
     }
-  };
-
-  const onVolume = (v: number) => {
-    setVolume(v);
-    player.setVolume(v);
   };
 
   return (
@@ -57,20 +60,6 @@ export default function Shruthi() {
             </button>
           );
         })}
-      </div>
-
-      <div className="volume-row">
-        <span style={{ fontSize: 18 }}>{'\uD83D\uDD08'}</span>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={volume}
-          onChange={(e) => onVolume(Number(e.target.value))}
-          aria-label="Volume"
-        />
-        <span style={{ fontSize: 18 }}>{'\uD83D\uDD0A'}</span>
       </div>
 
       <button

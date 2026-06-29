@@ -69,8 +69,10 @@ export class LoopPlayer {
   constructor(private volume = 1) {}
 
   async play(url: string): Promise<void> {
-    const myToken = ++this.token;
+    // Stop any current playback first, then claim a fresh token. (stop() bumps
+    // the token, so the token must be captured AFTER stop, not before.)
     this.stop();
+    const myToken = ++this.token;
     await resumeAudio();
     const buffer = await loadBuffer(url);
     // A newer play() was requested while this one was loading.

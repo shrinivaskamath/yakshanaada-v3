@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from '../ThemeContext';
+import { usePlayback } from '../PlaybackContext';
 import { LoopPlayer } from '../audio/engine';
 import {
   NOTE_LIST,
@@ -10,6 +11,7 @@ import {
 
 export default function Tanpura() {
   const { colors } = useTheme();
+  const { setPlaying } = usePlayback();
   const [mode, setMode] = useState<TanpuraMode>('ma');
   const [playingNote, setPlayingNote] = useState<NoteKey>('e');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -18,8 +20,15 @@ export default function Tanpura() {
   playerRef.current = player;
 
   useEffect(() => {
-    return () => playerRef.current.stop();
-  }, []);
+    setPlaying(isPlaying);
+  }, [isPlaying, setPlaying]);
+
+  useEffect(() => {
+    return () => {
+      playerRef.current.stop();
+      setPlaying(false);
+    };
+  }, [setPlaying]);
 
   const playNote = async (note: NoteKey, playMode: TanpuraMode = mode) => {
     setPlayingNote(note);
